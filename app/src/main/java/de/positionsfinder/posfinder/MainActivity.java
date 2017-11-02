@@ -1,8 +1,8 @@
 package de.positionsfinder.posfinder;
 
-import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -17,7 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.TextView;
+import de.positionsfinder.posfinder.database.JDBC_Connector;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -60,10 +61,21 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar.make(view, "TODO: Remove Settings tab and link this to the settings view, maybe..", Snackbar.LENGTH_LONG)
+                        .show();
+                // Go to the 3rd tab
+                mViewPager.setCurrentItem(3);
             }
         });
+
+        // All networking actions must happen in a different than the main thread!
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JDBC_Connector jdbc_connector = new JDBC_Connector();
+            }
+        }).start();
+
 
     }
 
@@ -126,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                     fragmentToUse = R.layout.fragment_main;
                     break;
                 case 2:
-                    fragmentToUse = R.layout.fragment_login_status;
+                    fragmentToUse = R.layout.fragment_status;
                     break;
                 case 3:
                     fragmentToUse = R.layout.fragment_settings;

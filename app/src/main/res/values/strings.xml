@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">PosFinder</string>
     <string name="tab_text_1">Map</string>
-    <string name="tab_text_2">Login</string>
-    <string name="tab_text_2_alt">Status</string>
+    <string name="tab_text_2">Status</string>
+    <!-- <string name="tab_text_2_alt">Status</string> -->
     <string name="tab_text_3">Einstellungen</string>
     <string name="action_settings">Settings</string>
     <!-- <string name="section_format">Hello World from section: %1$d</string> -->
