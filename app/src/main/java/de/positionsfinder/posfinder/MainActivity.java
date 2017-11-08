@@ -17,6 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import de.positionsfinder.posfinder.User.User;
 import de.positionsfinder.posfinder.database.JDBC_Connector;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,12 +40,23 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private User userInstance;
+    private Settings settingsInstance;
+    private JDBC_Connector jdbc_connector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        settingsInstance = Settings.getInstance();
+        settingsInstance.fetchSettings(this.getApplicationContext());
+
+        jdbc_connector = JDBC_Connector.getInstance();
+
+        userInstance = User.getInstance();
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,14 +85,43 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // All networking actions must happen in a different than the main thread!
+        /**
+         * SAMPLE CODE
+         */
         new Thread(new Runnable() {
             @Override
             public void run() {
-                JDBC_Connector jdbc_connector = new JDBC_Connector();
+
+                jdbc_connector = JDBC_Connector.getInstance();
+                jdbc_connector.connect("10.22.62.29", "haider_db1", "haider", "haider_edv");
+
+                HashMap<String, Object> testMap = new HashMap<>();
+                testMap.put("1","1");
+
+                ArrayList<HashMap<String, Object>> result = jdbc_connector.selectSTMNT(null, "teststable", testMap);
+
+                // SAMPLE processing code
+                for(int i = 0; i < result.size(); i++){
+
+                    HashMap<String, Object> map = result.get(i);
+                    for(Map.Entry<String,Object> entry : map.entrySet()){
+                       entry.getKey();
+                       entry.getValue();
+                    }
+                }
+
+                String userName = settingsInstance.getString(getString(R.string.prefs_username_key));
+                String password = settingsInstance.getString(getString(R.string.prefs_password_key));
+
+                boolean isUserLoggedIn = userInstance.setUserActive(getApplicationContext());
+                if(!userName.equals(getResources().getString(R.string.prefs_default_username))
+                        && !password.equals(getResources().getString(R.string.prefs_default_password))
+                        && isUserLoggedIn){
+                } else {
+                    userInstance.createUser(getApplicationContext(), "paolo", "abrakadabra");
+                }
             }
         }).start();
-
-
     }
 
 
